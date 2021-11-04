@@ -28,20 +28,20 @@ export interface RouteParamMetadata {
 }
 
 export function assignMetadata<TParamtype = any, TArgs = any>(
-  args: TArgs,
-  paramtype: TParamtype,
-  index: number,
-  data?: ParamData,
-  ...pipes: (Type<PipeTransform> | PipeTransform)[]
+    args: TArgs,
+    paramtype: TParamtype,
+    index: number,
+    data?: ParamData,
+    ...pipes: (Type<PipeTransform> | PipeTransform)[]
 ) {
-  return {
-    ...args,
-    [`${paramtype}:${index}`]: {
-      index,
-      data,
-      pipes,
-    },
-  };
+    return {
+        ...args,
+        [`${paramtype}:${index}`]: {
+            index,
+            data,
+            pipes,
+        },
+    };
 }
 
 function createRouteParamDecorator(paramtype: RouteParamtypes) {
@@ -63,26 +63,25 @@ function createRouteParamDecorator(paramtype: RouteParamtypes) {
     };
 }
 
-const createPipesRouteParamDecorator =
-  (paramtype: RouteParamtypes) =>
-  (
-    data?: any,
-    ...pipes: (Type<PipeTransform> | PipeTransform)[]
-  ): ParameterDecorator =>
-  (target, key, index) => {
-    const args =
-      Reflect.getMetadata(ROUTE_ARGS_METADATA, target.constructor, key) || {};
-    const hasParamData = isNil(data) || isString(data);
-    const paramData = hasParamData ? data : undefined;
-    const paramPipes = hasParamData ? pipes : [data, ...pipes];
+const createPipesRouteParamDecorator = (paramtype: RouteParamtypes) =>
+        (
+            data?: any,
+            ...pipes: (Type<PipeTransform> | PipeTransform)[]
+        ): ParameterDecorator =>
+            (target, key, index) => {
+                const args =
+                    Reflect.getMetadata(ROUTE_ARGS_METADATA, target.constructor, key) || {};
+                const hasParamData = isNil(data) || isString(data);
+                const paramData = hasParamData ? data : undefined;
+                const paramPipes = hasParamData ? pipes : [data, ...pipes];
 
-    Reflect.defineMetadata(
-      ROUTE_ARGS_METADATA,
-      assignMetadata(args, paramtype, index, paramData, ...paramPipes),
-      target.constructor,
-      key,
-    );
-  };
+                Reflect.defineMetadata(
+                    ROUTE_ARGS_METADATA,
+                    assignMetadata(args, paramtype, index, paramData, ...paramPipes),
+                    target.constructor,
+                    key,
+                );
+            };
 
 /**
  * Route handler parameter decorator. Extracts the `Request`
